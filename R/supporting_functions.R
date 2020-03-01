@@ -30,6 +30,7 @@ load_database <- function(path = "data/") {
 }
 
 reverse_month_day <- function(date) {
+  date <- as.character(date)
   if (length(date) == 1) {
     if (!is.na(date)) {
       date <- strsplit(date, "-")[[1]]

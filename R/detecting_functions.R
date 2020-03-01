@@ -1,6 +1,6 @@
 
 
-flag_possible_collisions <- function(data_pids, data_names,
+detect_pid_collisions <- function(data_pids, data_names,
   reference_pids = NA, reference_names = NA,
   threshold = 0.8, silent = FALSE) {
 

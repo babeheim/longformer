@@ -21,6 +21,7 @@ match_vids <- function(dates, pids, visits, visit_day_threshold = 45, quiet = FA
         date_reversable <- as.numeric(substr(dates[i], 9, 10)) < 13
         if (date_reversable) {
           my_date_reversed <- reverse_month_day(dates[i])
+          my_date_reversed <- as.Date(my_date_reversed)
           diffs <- abs(as.numeric(my_date_reversed - visits$date[my_visit_rows]))
           if (any(!is.na(diffs))) {
             if (any(diffs < visit_day_threshold, na.rm = TRUE)) {
