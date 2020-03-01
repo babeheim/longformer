@@ -16,7 +16,7 @@ test_that("merge_people works", {
     )
   ) %>% as.data.frame() -> reg
 
-  reg2 <- merge_people("AAAA", "BBBB", reg, check = FALSE)
+  reg2 <- merge_pids("AAAA", "BBBB", reg, verbose = FALSE)
   expect_true(nrow(reg2) == 1)
 
   bind_rows(
@@ -41,7 +41,7 @@ test_that("merge_people works", {
     )
   ) %>% as.data.frame() -> reg
 
-  reg2 <- merge_people("A", "B", reg, check = FALSE)
+  reg2 <- merge_pids("A", "B", reg, verbose = FALSE)
   expect_true(nrow(reg2) == 2)
   expect_true(reg2$mother_pid[reg2$pid == "C"] == "B")
 
