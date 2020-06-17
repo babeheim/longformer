@@ -1,5 +1,5 @@
 
-match_vids <- function(dates, pids, visits, visit_day_threshold = 45, quiet = FALSE) {
+match_vids <- function(dates, pids, visits, visit_day_threshold = 45, quiet = FALSE, reverse_date = TRUE) {
   if (length(dates) != length(pids)) {
     stop("dates and pids have to be the same length!")
   }
@@ -17,7 +17,7 @@ match_vids <- function(dates, pids, visits, visit_day_threshold = 45, quiet = FA
           if (!quiet) cat("date matched to existing visit\n")
         }
       }
-      if (is.na(matched_vids[i])) {
+      if (is.na(matched_vids[i]) & reverse_date) {
         date_reversable <- as.numeric(substr(dates[i], 9, 10)) < 13
         if (date_reversable) {
           my_date_reversed <- reverse_month_day(dates[i])

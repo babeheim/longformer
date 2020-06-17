@@ -1,32 +1,9 @@
 
-
-
 clean_text <- function(text) {
   # convert non-ASCII to closest ascii
   # takes care of non-printing ASCII
   text %>% stringi::stri_trans_general("latin-ascii") %>%
     str_replace("[\x01-\x1F]", "")
-}
-
-
-load_database <- function(path = "data/") {
-
-  data_files <- list.files(path = path, pattern='*.csv', full.names=TRUE)
-  data_tables <- basename(data_files)
-  data_tables <- gsub('\\.csv', '', data_tables)
-
-  progbar <- txtProgressBar(1, length(data_files), style=3)
-
-  db <- list()
-  for (i in 1:length(data_files)) {
-    db[[i]] <- read.csv(data_files[i], stringsAsFactors = FALSE)
-    names(db)[i] <- data_tables[i]
-    setTxtProgressBar(progbar, i)
-  }
-  
-  close(progbar)
-  return(db)
-
 }
 
 reverse_month_day <- function(date) {
@@ -77,25 +54,65 @@ make_ids <- function(n, bag = c(letters, 0:9), reserved='', seed=NA, nchars=NA){
   output
 }
 
-review_cases <- function(check, d, reviewed = NA, refresh = TRUE) {
 
-  if (!any(is.na(reviewed))) stop ("invalid reviewed vector")
-  start <- min(which(is.na(reviewed)))
-  out <- rep(NA, length(check))
-  out[1:length(reviewed)] <- reviewed
-  if (refresh) system("clear")
-  for (i in start:length(check)) {
-    print(d[which(d$pid == check[i]), ])
-    out[i] <- readline(paste("(", i, "/", length(check), ") 1=no issues, 2=not sure, 3=problem; type 'exit' to end\ndecision: ", sep=""))
-    out[out == "1"] <- "no issues"
-    out[out == "2"] <- "not sure"
-    out[out == "3"] <- "problem"
-    if (refresh) system("clear")
-    if (out[i] == "exit") break()
-  }
 
-  print("all cases reviewed!")
+# this function doesn't work!
 
-  return(out)
+# apply_id_updates <- function(cdm, d) {
 
-}
+# # step 1, exact name matches
+
+#   cdm$key <- paste(cdm$old_id, cdm$nombre, sep="-")
+#   d$key <- paste(d$pid, d$Nombre, sep="-")
+#   length(cdm$active_id[match(d$key[d$key %in% cdm$key], cdm$key)])  #155
+#   d$pid[d$key %in% cdm$key] <- cdm$active_id[match(d$key[d$key %in% cdm$key], cdm$key)]
+
+#   cdm <- cdm[,-which(colnames(cdm)=="key")]
+#   d <- d[,-which(colnames(d)=="key")]
+
+# # step 2, manual updates
+
+#   check <- unique(d$pid[which(d$pid %in% cdm$old_id)])
+
+#   d[which(d$pid==check[i]),c("Fecha", "pid", "Nombre", "Apellido1", "Apellido2")]
+#   cdm[cdm$old_id==check[i],]
+#   # cens[which(cens$PID %in% cdm$active_id[cdm$old_id==check[i]]),]
+#   i <- i + 1
+
+#   manual_updates <- compare_id_records(cdm, d, outpath = "cdm_cleanings.txt")
+
+# # step 3, automatic updates
+
+#   length(cdm$active_id[match(d$pid[which(d$pid %in% cdm$old_id)], cdm$old_id)])  # 4! 
+#   d$pid[which(d$pid %in% cdm$old_id)] <- cdm$active_id[match(d$pid[which(d$pid %in% cdm$old_id)], cdm$old_id)]
+
+#   unique(d$pid[which(d$pid %in% cdm$old_id)]) # none!
+
+#   return(d)
+
+# }
+
+
+# review_cases <- function(check, d, people, reviewed = NA, refresh = TRUE) {
+
+#   if (!any(is.na(reviewed))) stop ("invalid reviewed vector")
+#   start <- min(which(is.na(reviewed)))
+#   out <- rep(NA, length(check))
+#   out[1:length(reviewed)] <- reviewed
+#   if (refresh) system("clear")
+#   for (i in start:length(check)) {
+#     print(d[which(d$pid == check[i]), ])
+#     print(people[which(people$pid == check[i]), ])
+#     out[i] <- readline(paste("(", i, "/", length(check), ") 1=no issues, 2=not sure, 3=problem; type 'exit' to end\ndecision: ", sep=""))
+#     out[out == "1"] <- "no issues"
+#     out[out == "2"] <- "not sure"
+#     out[out == "3"] <- "problem"
+#     if (refresh) system("clear")
+#     if (out[i] == "exit") break()
+#   }
+
+#   print("all cases reviewed!")
+
+#   return(out)
+
+# }

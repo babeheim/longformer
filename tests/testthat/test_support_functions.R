@@ -1,5 +1,12 @@
 
 
+test_that("clean_text works properly", {
+
+# clean_text
+
+})
+
+
 test_that("reverse_month_day works", {
   expect_equal(reverse_month_day("2020-05-02"), "2020-02-05")
   expect_identical(reverse_month_day(c("2020-05-02", "2020-03-09")), c("2020-02-05", "2020-09-03"))

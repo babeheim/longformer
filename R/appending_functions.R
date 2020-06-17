@@ -1,5 +1,5 @@
 
-append_id_change <- function(new, cdm, verbose = TRUE) {
+update_id_changes <- function(new, cdm, verbose = TRUE) {
 
   if (is.na(new$type) | (!new$type %in% c("vid", "pid"))) stop("type must either be 'vid' or 'pid")
 

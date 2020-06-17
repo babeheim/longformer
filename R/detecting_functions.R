@@ -1,4 +1,61 @@
 
+detect_retired_pids <- function(cdm, d, columns = c("pid", "first_name", "last_name_1", "last_name_2"), outpath = NA) {
+
+  check <- unique(d$pid[which(d$pid %in% cdm$old_id)])
+
+  my.script <- character(0)
+
+  for(i in 1:length(check)){
+
+    my.cdm.rows <- which(cdm$old_id==check[i])
+
+    print(d[which(d$pid==check[i]), columns])
+    print(cdm[my.cdm.rows,])
+    
+    output <- character(0)
+    
+    n <- readline(paste("(", i, "/", length(check), ") 1=use first, 2=use second, etc.?  ", sep=""))
+
+    if(n=="1"){
+
+      active_id <- cdm$active_id[my.cdm.rows[1]]
+      output <- paste("d$pid[which(d$pid=='", check[i], "')] <- '", active_id, "'", sep="")
+
+    }
+
+    if(n=="2"){
+
+      active_id <- cdm$active_id[my.cdm.rows[2]]
+      output <- paste("d$pid[which(d$pid=='", check[i], "')] <- '", active_id, "'", sep="")
+
+    }
+
+    if(n=="3" & length(my.cdm.rows)>2){
+
+      active_id <- cdm$active_id[my.cdm.rows[3]]
+      output <- paste("d$pid[which(d$pid=='", check[i], "')] <- '", active_id, "'", sep="")
+
+    }
+
+    if(n=="4" & length(my.cdm.rows)>3){
+
+      active_id <- cdm$active_id[my.cdm.rows[4]]
+      output <- paste("d[which(d$pid=='", check[i], "')] <- '", active_id, "'", sep="")
+
+    }
+
+    
+    my.script <- c(my.script, output)
+    
+  }
+
+  if (!is.na(outpath)) writeLines(my.script, "cdm_cleanings.txt")
+
+  return(my.script)
+
+}
+
+
 
 detect_pid_collisions <- function(data_pids, data_names,
   reference_pids = NA, reference_names = NA,
@@ -8,6 +65,7 @@ detect_pid_collisions <- function(data_pids, data_names,
   if (class(data_names) != "character") stop("data_names must be a character vector")
   if (length(data_pids) != length(data_names)) stop("data_pids and data_names must be vectors of the same length!")
   if (length(reference_pids) != length(reference_names)) stop("reference_pids and reference_names must be vectors of the same length!")
+  if (any(duplicated(reference_pids))) stop("reference_pids should be a vector of unique pids - no duplicates!")
 
   pids <- sort(unique(data_pids))
   n_pids <- length(pids)

@@ -1,0 +1,172 @@
+---
+author: "Bret A. Beheim"
+date: "2020-06-17"
+title: "longformer: tools for managing a longitudinal behavioral data in R"
+---
+
+Here's the basic outline of the package.
+
+# Core Functions: Detecting, Updating, Matching
+
+## `detect_pid_collisions`
+
+This function takes two vectors as the primary arguments `data_pids` and `data_names`. These must be the same length, and represent the "pid" and "name" columns in a rectangular data table. With only these two arguments, the function will use Levenstein name similarity to flag pids which appear multiple times associated with overly-different names, below a `threshold` argument where 1 represents. By these criteria, possible collisions are output as a vector of offending pids.
+
+For example:
+
+```
+  data_pids <- c("1111", "1111", "2222", "2222")
+  data_names <- c("john", "jon", "mike", "mk")
+  detect_pid_collisions(data_pids, data_names, threshold = 0.7)
+```
+
+In this case, "john" and "jon" are similar enough not to be flagged, but "mike" and "mk" are, so the output is only the second PID, `2222`. The default threshold is higher at 0.8, in which case both would be flagged.
+
+We also have situations in which we want to detect collisions between *two* tables, e.g. the `people.csv` table and whatever data table we are working with. In this case, the `detect_pid_collisions` function needs another two arguments, `reference_pids` and `reference_names`. If these are supplied, the "official" name for that PID will be in the `reference_name` vector, which will be the name against which all the other names for that PID are evaluated by Levenstein similarity. There should not be multiple instances of the same PID in the `reference_pid` vector.
+
+## `update_pid`
+
+The `people` table has a number of hard constraints: pid's cannot appear more than once and cannot have missing values (they are the primary key for this table), and all pids mentioned in the parent columns must also appear as ego rows. So, when we want to change a pid in the people table, it's not as simple as just replacing one value with another. This is what `update_pid` is for.
+
+### Replacing an old PID with a brand new one
+
+If Jose has PID "AAAA" but that needs to be updated to a brand new PID "BBBB", we can do the following:
+
+```
+  people <- update_pid(old_pid = "AAAA", active_pid = "BBBB", people)
+```
+
+This will not only change Jose's entry, but also the parent PID for any child of Jose. The output will be a new table with the same dimensions as before, but no mention of "AAAA".
+
+### Merging two PIDs together into one
+
+Say that Maria is discovered to have two separate entries in people, a pid duplication "CCCC" and "DDDD". We decide that she should have "CCCC" going forward, so we write
+
+```
+  people <- update_pid(old_pid = "DDDD", active_pid = "CCCC", people)
+```
+
+Here the output will *remove* Maria's entry for DDDD altogether, so there is only one entry left for her. It will also update the parent PID from DDDD to CCCC for all of Martha's children that appear under that PID. The output table should thus be one entry less than the input table.
+
+
+## `update_id_changes`
+
+When an ID needs to be retired, we add it to the `id_changes` table with the `append_id_change` function. Note that this isn't as simple as just adding a row to this table, because it is a mapping table that links retired ID's to an active ID. Thus, if we *retire* an ID that was previously considered an active id, we need to re-map existing entries to the *new* active ID.
+
+```
+
+  changes <- list(
+    list(
+      date = "2020-06-17",
+      coder = "BAB",
+      type = "pid",
+      old_id = "A",
+      active_id = "C",
+      name = "Harry",
+      reason = "duplication"
+    ),
+    list(
+      date = "2020-06-17",
+      coder = "NG",
+      type = "pid",
+      old_id = "B",
+      active_id = "C",
+      name = "Harry",
+      reason = "duplication"
+    ),
+    list(
+      date = "2020-06-17",
+      coder = "BB",
+      type = "pid",
+      old_id = "F",
+      active_id = "G",
+      name = "Ron",
+      reason = "duplication"
+    )
+  ) %>%
+  bind_rows() %>%
+  as.data.frame(stringsAsFactors = FALSE)
+
+  add <- list(
+    date = "2020-06-17",
+    coder = "BAB",
+    type = "pid",
+    old_id = "C",
+    active_id = "D",
+    name = "Harry",
+    reason = "duplication"
+  )
+
+  updated_changes <- update_id_changes(add, changes)
+
+```
+
+
+## matching vids with `match_vid`
+
+A *visit* is defined in THLHP as the period of 45 days within which various data points collected on the same indiviudal are considered the "same visit" for that individual. This isn't the same date because different data is collected over multiple days or weeks, or entered much later back in an office or lab. Nevertheless we need the VIDs to be able to query contemptoraneous data points from multiple sources.
+
+To identify the VID of an interview or observation, we need the date and the PID of the associated person.
+
+```
+d$vids <- match_vids(d$dates, d$pids, visits)
+```
+
+The function will return the "best guess" of the visit associated with that date and PID, or, if no visit exists in the `visits` table, it will return `NA`.
+
+One useful feature is the `reverse_date` flag, which defaults to TRUE. While this is on, the date will not only be compared against similar dates, but the *month-day* reversal will also be compared for matches, in case they exist. Not all months and days can be reversed, but if they can, this flag will check.
+
+
+# Support Functions
+
+## `reverse_month_day`
+
+A function to flip the month and day in an ISO-8601 date.
+
+## `make_ids`
+
+The famous ID generator.
+
+## `detect_retired_pids`
+
+This function helps resolve the presence of retired PIDs in a dataset, by working case-by-case and presenting either dataset info. It has the option of writing the results of these decisions to a file, which can then be used to update the data file.
+
+## `clean_text`
+
+This function will scrub text of garbage characters.
+
+
+## `load_database`
+
+## `audit_database`
+
+<!-- the checks:
+1. all pids are in the people table
+2. all vids are in the visits table
+3. no vid or pid in these tables is in the cdm
+4. all dates are ISO-8601
+5. there is always a pid and vid column
+ -->
+
+# A Standard PID Sync Cycle
+
+In `longformer` a blank database using the default schema can be created with 
+
+```
+  my_db <- create_longform()
+```
+
+This populates into R a database object with the following default tables:
+
+- people: a list of people, one-row-per-person, including attributes of each person
+- observations: a list of observations, one-row-per-observation, inclduing the attributies of that observation, such as the timestamp, location, name of observer
+
+Other tables are created are metadata about the database:
+
+- tables
+- variables
+- links: the relational glue that connects everything together
+
+A blank database can be exported to SQL or CSV tables using `write_longform(db)`. 
+
+We can illustrate this with the Snoobs package. Here two different sources of data are coming in. The scripts provide the interpreter to sent that information into the database itself.
