@@ -101,3 +101,26 @@ detect_pid_collisions <- function(data_pids, data_names,
 
 }
 
+review_collisions <- function(check, d, people, reviewed = NA, refresh = TRUE) {
+
+  if (!any(is.na(reviewed))) stop ("invalid reviewed vector")
+  start <- min(which(is.na(reviewed)))
+  out <- rep(NA, length(check))
+  out[1:length(reviewed)] <- reviewed
+  if (refresh) system("clear")
+  for (i in start:length(check)) {
+    print(d[which(d$pid == check[i]), ])
+    print(people[which(people$pid == check[i]), ])
+    out[i] <- readline(paste("(", i, "/", length(check), ") 1=no issues, 2=not sure, 3=problem; type 'exit' to end\ndecision: ", sep=""))
+    out[out == "1"] <- "no issues"
+    out[out == "2"] <- "not sure"
+    out[out == "3"] <- "problem"
+    if (refresh) system("clear")
+    if (out[i] == "exit") break()
+  }
+
+  print("all cases reviewed!")
+
+  return(out)
+
+}

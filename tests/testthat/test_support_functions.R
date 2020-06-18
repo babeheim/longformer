@@ -4,6 +4,55 @@ test_that("clean_text works properly", {
 
 # clean_text
 
+# scrub non-unicode crazy characters
+# d$first_name <- clean_text(d$first_name)
+# d$last_name_1 <- clean_text(d$last_name_1)
+# d$last_name_2 <- clean_text(d$last_name_2)
+
+# this is what a lot turn into unfortunately
+# flag this character and scrub: �
+
+
+# sgf_tag <- stringi::stri_trans_general(sgf_tag, "latin-ascii") # convert non-ASCII to closest ascii
+# sgf_tag <- gsub("[\x01-\x1F]", "", sgf_tag) # takes care of non-printing ASCII
+
+# findOffendingCharacter <- function(x, maxStringLength=256){  
+#   # print(x)
+#   for (c in 1:maxStringLength){
+#     offendingChar <- substr(x,c,c)
+#     # print(offendingChar) 
+#     #uncomment if you want the indiv characters printed
+#     #the next character is the offending multibyte Character
+#   }    
+# }
+
+# string_vector <- c("test", "Se\x96ora", "works fine")
+
+# string_vector <- c("test", "Se\x96ora", "works fine")
+
+#  - this doens't even print in the terminal window
+# yep thats it! 
+# x96 is little endian 96 00
+
+#   japanese <- c("にほんご")
+# stringi::stri_trans_general(japanese, "latin-ascii") # still japanese! 
+
+# y <- c("a", "�", "a �")
+# stringi::stri_trans_general(y, "latin-ascii") # no change! 
+
+# z <- c("🔥", "にほんご", "�", "a🔥�ご")
+# stringi::stri_trans_general(z, "latin-ascii") # no change! 
+
+# z <- c("\\n", "\\t", "\v", "\\v")
+# stringi::stri_trans_general(z, "latin-ascii") # no change! 
+
+# z <- c("a", "", "🔥a")
+# stringi::stri_trans_general(z, "latin-ascii") # scrubs! 
+
+
+# the e accented character becomes  In\xe9s
+
+
 })
 
 
