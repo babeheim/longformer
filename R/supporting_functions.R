@@ -38,9 +38,19 @@ dir_init <- function(path, verbose=FALSE){
   dir.create(path)
 }
 
-make_ids <- function(n, bag = c(letters, 0:9), reserved='', seed=NA, nchars=NA){
-  if(is.na(seed) | !is.numeric(seed)) set.seed(as.numeric(as.POSIXlt(Sys.time())))
-  if(!is.na(seed) & is.numeric(seed)) set.seed(seed)
+make_ids <- function(n, bag = c(letters, 0:9), reserved='', seed=NA, nchars=4){
+  if (length(bag) == 1) {
+    if (bag == "thlhp") {
+      banned_letters <- c("I", "Z", "G", "S", "O", "E")
+      banned_numbers <- c(0, 1, 5, 6)
+      pid_letters <- setdiff(LETTERS, banned_letters)
+      pid_numbers <- setdiff(0:9, banned_numbers)
+      bag <- c(pid_letters, pid_numbers)
+    }
+  }
+  if (!is.numeric(nchars)) stop("how many nchars the id will have?")
+  if (is.na(seed) | !is.numeric(seed)) set.seed(as.numeric(as.POSIXlt(Sys.time())))
+  if (!is.na(seed) & is.numeric(seed)) set.seed(seed)
   output <- replicate(n, paste(sample(bag, nchars, replace=TRUE), 
     collapse=''))
   rejected <- duplicated(output) | output %in% reserved | substr(output, 1, 1) %in% 0:9
