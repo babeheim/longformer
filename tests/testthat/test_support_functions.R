@@ -2,6 +2,10 @@
 
 test_that("clean_text works properly", {
 
+  expect_identical(clean_text(LETTERS), LETTERS)
+  expect_identical(clean_text(letters), letters)
+  expect_identical(clean_text(0:9), as.character(0:9))
+
   symbols <- list(
     acute = "áéíóúÁÉÍÓÚýÝ",
     grave = "àèìòùÀÈÌÒÙ",
@@ -16,6 +20,9 @@ test_that("clean_text works properly", {
   expect_equal(clean_text(symbols$circunflex), "aeiouAEIOU")
   expect_equal(clean_text(symbols$umlaut), "aeiouAEIOUy")
   expect_equal(clean_text(symbols$cedil), "cC")
+
+  expect_identical(clean_text(c("á", "b", "ç")), c("a", "b", "c"))
+  expect_identical(clean_text(c(symbols$acute, symbols$grave)), c("aeiouAEIOUyY", "aeiouAEIOU"))
 
   expect_equal(clean_text("🔥"), "🔥")
   expect_equal(clean_text("☠"), "")
