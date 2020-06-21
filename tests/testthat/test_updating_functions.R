@@ -95,7 +95,7 @@ test_that("update_id_changes works", {
     reason = "duplication"
   )
 
-  updated_changes <- update_id_changes(add, changes)
+  updated_changes <- update_id_changes(add, changes, verbose = FALSE)
 
   expect_true(nrow(updated_changes) == 4)
   expect_true(!"C" %in% updated_changes$active_id)

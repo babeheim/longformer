@@ -3,7 +3,9 @@ clean_text <- function(text) {
   # convert non-ASCII to closest ascii
   # takes care of non-printing ASCII
   text %>% stringi::stri_trans_general("latin-ascii") %>%
-    str_replace("[\x01-\x1F]", "")
+    str_replace("[\x01-\x1F]", "") %>%
+    str_replace("[\x7F-\x9F]", "") %>%
+    str_replace("�", "")
 }
 
 reverse_month_day <- function(date) {
