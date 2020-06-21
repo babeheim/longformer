@@ -1,57 +1,34 @@
 
-detect_retired_pids <- function(cdm, d, columns = c("pid", "first_name", "last_name_1", "last_name_2"), outpath = NA) {
+detect_retired_pids <- function(changelog, d, columns = c("pid", "first_name", "last_name_1", "last_name_2"), outpath = NA) {
 
-  check <- unique(d$pid[which(d$pid %in% cdm$old_id)])
+  check <- unique(d$pid[which(d$pid %in% changelog$old_id)])
 
-  my.script <- character(0)
+  my.script <- rep("", length(check))
 
-  for(i in 1:length(check)){
+  for (i in 1:length(check)){
 
-    my.cdm.rows <- which(cdm$old_id==check[i])
+    my.changelog.rows <- which(changelog$old_id == check[i])
 
-    print(d[which(d$pid==check[i]), columns])
-    print(cdm[my.cdm.rows,])
-    
-    output <- character(0)
-    
-    n <- readline(paste("(", i, "/", length(check), ") 1=use first, 2=use second, etc.?  ", sep=""))
+    print(d[which(d$pid == check[i]), columns])
+    print(changelog[my.changelog.rows,])
 
-    if(n=="1"){
+    selection <- readline(paste("(", i, "/", length(check), ") 1=first, 2=second, etc.? (0=none)  ", sep=""))
 
-      active_id <- cdm$active_id[my.cdm.rows[1]]
-      output <- paste("d$pid[which(d$pid=='", check[i], "')] <- '", active_id, "'", sep="")
-
+    if (0 < selection & selection <= length(my.changelog.rows)) {
+      active_id <- changelog$active_id[my.changelog.rows[selection]]
+      my.script[i] <- paste("d$pid[which(d$pid == '", check[i], "')] <- '", active_id, "'", sep="")
+    } else {
+      my.script[i] <- paste("# no changelog entry chosen for pid", check[i])
+      print(my.script[i])
     }
-
-    if(n=="2"){
-
-      active_id <- cdm$active_id[my.cdm.rows[2]]
-      output <- paste("d$pid[which(d$pid=='", check[i], "')] <- '", active_id, "'", sep="")
-
-    }
-
-    if(n=="3" & length(my.cdm.rows)>2){
-
-      active_id <- cdm$active_id[my.cdm.rows[3]]
-      output <- paste("d$pid[which(d$pid=='", check[i], "')] <- '", active_id, "'", sep="")
-
-    }
-
-    if(n=="4" & length(my.cdm.rows)>3){
-
-      active_id <- cdm$active_id[my.cdm.rows[4]]
-      output <- paste("d[which(d$pid=='", check[i], "')] <- '", active_id, "'", sep="")
-
-    }
-
-    
-    my.script <- c(my.script, output)
-    
   }
 
-  if (!is.na(outpath)) writeLines(my.script, "cdm_cleanings.txt")
-
-  return(my.script)
+  if (!is.na(outpath)) {
+    writeLines(my.script, "changelog_cleanings.txt")
+    print("changelog_cleanings.txt created in current working directory")
+  } else {
+    return(my.script)
+  }
 
 }
 
@@ -79,13 +56,13 @@ detect_pid_collisions <- function(data_pids, data_names,
   flag <- rep(NA, n_pids)
 
   for (i in 1:n_pids) {
-    my_names <- data_names[which(data_pids == pids[i])]
-    drop <- which(my_names == "" | is.na(my_names))
+    my_names <- data_names[which(data_pids  ==  pids[i])]
+    drop <- which(my_names  ==  "" | is.na(my_names))
     if (length(drop) > 0) my_names <- my_names[-drop]
     if (all(is.na(reference_names))) {
       reference_name <- my_names[1]
     } else {
-      reference_name <- reference_names[which(reference_pids == pids[i])]
+      reference_name <- reference_names[which(reference_pids  ==  pids[i])]
     }
     flag[i] <- any(similarity(reference_name, my_names) < threshold)
     if (!silent) setTxtProgressBar(progbar, i)
@@ -95,7 +72,7 @@ detect_pid_collisions <- function(data_pids, data_names,
 
   check <- pids[flag]
 
-  if (length(check) == 0 & !silent) cat("no pids were flagged as possible collisions!\n")
+  if (length(check)  ==  0 & !silent) cat("no pids were flagged as possible collisions!\n")
 
   return(check)
 
@@ -109,14 +86,14 @@ review_collisions <- function(check, d, columns = c("pid", "first_name", "last_n
   out[1:length(reviewed)] <- reviewed
   if (refresh) system("clear")
   for (i in start:length(check)) {
-    print(d[which(d$pid == check[i]),columns])
-    if (check[i] %in% people$pid) print(people[which(people$pid == check[i]), ])
+    print(d[which(d$pid  ==  check[i]),columns])
+    if (check[i] %in% people$pid) print(people[which(people$pid  ==  check[i]), ])
     out[i] <- readline(paste("(", i, "/", length(check), ") 1=no issues, 2=not sure, 3=problem; type 'exit' to end\ndecision: ", sep=""))
-    out[out == "1"] <- "no issues"
-    out[out == "2"] <- "not sure"
-    out[out == "3"] <- "problem"
+    out[out  ==  "1"] <- "no issues"
+    out[out  ==  "2"] <- "not sure"
+    out[out  ==  "3"] <- "problem"
     if (refresh) system("clear")
-    if (out[i] == "exit") break()
+    if (out[i]  ==  "exit") break()
   }
 
   print("all cases reviewed!")
