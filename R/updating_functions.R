@@ -1,10 +1,17 @@
 
 
-update_id_changes <- function(new, cdm, verbose = TRUE) {
+update_id_changes <- function(new, changelog, verbose = TRUE) {
+
+  if (!all(c("coder", "date", "old_id", "active_id", "name", "type", "reason") %in% names(new))) {
+    stop ("some fields in the 'new' entry are missing")
+  }
 
   if (is.na(new$type) | (!new$type %in% c("vid", "pid"))) stop("type must either be 'vid' or 'pid")
+  if (new$old_id == new$active_id) stop("the old_id and active_id you want to link cannot be the same")
+  if (any(changelog$old_id == new$old_id & changelog$active_id == new$active_id)) stop("this entry already exists in the id changelog!")
+  if (any(changelog$old_id == new$active_id & changelog$active_id == new$old_id)) stop("the reverse entry already exists in the id changelog!")
 
-  output <- cdm
+  output <- changelog
 
   if (new$old_id == "") stop("You must give an old pid.")
   if (new$active_id == "") stop("You must give a new pid.")
@@ -12,9 +19,6 @@ update_id_changes <- function(new, cdm, verbose = TRUE) {
   if (any(output$old_id == new$old_id & output$active_id == new$active_id)) {
     print(output[which(output$old_id == new$old_id & output$active_id == new$active_id),])
     warning("Looks like this entry already exists")
-  }
-  if (!all(c("coder", "date", "old_id", "active_id", "name", "type", "reason") %in% names(new))) {
-    stop ("some fields in the 'new' entry are missing")
   }
 
   if (verbose) {
