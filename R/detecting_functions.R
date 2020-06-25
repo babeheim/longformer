@@ -3,31 +3,37 @@ detect_retired_pids <- function(changelog, d, columns = c("pid", "first_name", "
 
   check <- unique(d$pid[which(d$pid %in% changelog$old_id)])
 
-  my.script <- rep("", length(check))
-
-  for (i in 1:length(check)){
-
-    my.changelog.rows <- which(changelog$old_id == check[i])
-
-    print(d[which(d$pid == check[i]), columns])
-    print(changelog[my.changelog.rows,])
-
-    selection <- readline(paste("(", i, "/", length(check), ") 1=first, 2=second, etc.? (0=none)  ", sep=""))
-
-    if (0 < selection & selection <= length(my.changelog.rows)) {
-      active_id <- changelog$active_id[my.changelog.rows[selection]]
-      my.script[i] <- paste("d$pid[which(d$pid == '", check[i], "')] <- '", active_id, "'", sep="")
-    } else {
-      my.script[i] <- paste("# no changelog entry chosen for pid", check[i])
-      print(my.script[i])
-    }
-  }
-
-  if (!is.na(outpath)) {
-    writeLines(my.script, "changelog_cleanings.txt")
-    print("changelog_cleanings.txt created in current working directory")
+  if (length(check) == 0) {
+    stop("no pids are in the changelog!")
   } else {
-    return(my.script)
+
+    my.script <- rep("", length(check))
+
+    for (i in 1:length(check)){
+
+      my.changelog.rows <- which(changelog$old_id == check[i])
+
+      print(d[which(d$pid == check[i]), columns])
+      print(changelog[my.changelog.rows,])
+
+      selection <- as.numeric(readline(paste("(", i, "/", length(check), ") 1=first, 2=second, etc.? (0=none)  ", sep="")))
+
+      if (!is.na(selection) & 0 < selection & selection <= length(my.changelog.rows)) {
+        active_id <- changelog$active_id[my.changelog.rows[selection]]
+        my.script[i] <- paste("d$pid[which(d$pid == '", check[i], "')] <- '", active_id, "'", sep="")
+      } else {
+        my.script[i] <- paste("# no changelog entry chosen for pid", check[i])
+        print(my.script[i])
+      }
+    }
+
+    if (!is.na(outpath)) {
+      writeLines(my.script, "changelog_cleanings.txt")
+      print("changelog_cleanings.txt created in current working directory")
+    } else {
+      return(my.script)
+    }
+
   }
 
 }
