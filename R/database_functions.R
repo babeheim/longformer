@@ -9,7 +9,7 @@ load_database <- function(path = "data/") {
 
   db <- list()
   for (i in 1:length(data_files)) {
-    db[[i]] <- read.csv(data_files[i], stringsAsFactors = FALSE)
+    db[[i]] <- read.csv(data_files[i], stringsAsFactors = FALSE, fileEncoding = "latin1")
     names(db)[i] <- data_tables[i]
     setTxtProgressBar(progbar, i)
   }
@@ -17,8 +17,4 @@ load_database <- function(path = "data/") {
   close(progbar)
   return(db)
 
-}
-
-audit_database <- function(dat) {
-# ...
 }
