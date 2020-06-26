@@ -6,6 +6,9 @@ test_that("clean_text works properly", {
   expect_identical(clean_text(letters), letters)
   expect_identical(clean_text(0:9), as.character(0:9))
 
+  # â€™
+  # invalid multibyte string example
+
   symbols <- list(
     acute = "áéíóúÁÉÍÓÚýÝ",
     grave = "àèìòùÀÈÌÒÙ",
@@ -56,4 +59,16 @@ test_that("make_ids always produces the correct number of ids, but never collide
     expect_false(any(duplicated(x)))
     expect_true(length(x) == n)
   }
+})
+
+test_that("make_ids respects the reserved list", {
+  reserved <- make_ids(n = 100000, nchars = 5)
+  for(i in 1:10){
+    x <- make_ids(n = 1000, bag = "thlhp", reserved = reserved, nchars = 5)
+    expect_false(any(x %in% reserved))
+  }
+})
+
+test_that("make_ids fails on impossible jobs", {
+  expect_error(x <- make_ids(n = 10000, bag = c(0:9), nchars = 3))
 })
