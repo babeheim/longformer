@@ -13,6 +13,7 @@ Depends: R (>= 3.5.1),
   stringi,
   dplyr,
   stringr,
-  testthat
+  testthat,
+  pdftools
 Encoding: UTF-8
 LazyData: true
