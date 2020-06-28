@@ -5,7 +5,8 @@ clean_text <- function(text) {
   text %>% stringi::stri_trans_general("latin-ascii") %>%
     str_replace("[\x01-\x1F]", "") %>%
     str_replace("[\x7F-\x9F]", "") %>%
-    str_replace("�", "")
+    str_replace("�", "") %>%
+    gsub(pattern = "[^\x01-\x7f]", replacement = "", x = .)
 }
 
 # clean_csv <- function(file) {

@@ -27,9 +27,12 @@ test_that("clean_text works properly", {
   expect_identical(clean_text(c("á", "b", "ç")), c("a", "b", "c"))
   expect_identical(clean_text(c(symbols$acute, symbols$grave)), c("aeiouAEIOUyY", "aeiouAEIOU"))
 
-  expect_equal(clean_text("🔥"), "🔥")
+  expect_equal(clean_text("🔥"), "")
   expect_equal(clean_text("☠"), "")
   expect_equal(clean_text("\u2620"), "")
+  expect_equal(clean_text("\u2620a"), "a")
+  expect_equal(clean_text("a\u2620a"), "aa")
+  expect_equal(clean_text("a\u2620a\u2620"), "aa")
   expect_equal(clean_text("gro\u00df"), "gross")
   expect_equal(clean_text("\u0104"), "A")
   expect_equal(clean_text(""), "")
@@ -40,6 +43,9 @@ test_that("clean_text works properly", {
   expect_equal(clean_text("\xe9"), "")
   expect_equal(clean_text("\xfa"), "")
   expect_equal(clean_text("�"), "")
+
+  expect_equal(clean_text("\u0082"), "")
+  expect_equal(clean_text("\u0083"), "")
 })
 
 test_that("reverse_month_day works", {
@@ -48,9 +54,6 @@ test_that("reverse_month_day works", {
   expect_true(is.na(reverse_month_day("2020-05-31")))
   expect_identical(reverse_month_day(c("2020-05-02", "2020-03-09", NA)), c("2020-02-05", "2020-09-03", NA))
 })
-
-# make_ids should take a bag
-# leading digit of make_id is never 0
 
 test_that("make_ids always produces the correct number of ids, but never collides with itself", {
   for(i in 1:10){
