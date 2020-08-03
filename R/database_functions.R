@@ -1,5 +1,5 @@
 
-load_database <- function(path = "data/") {
+load_database <- function(path = "data/", encoding = "latin1") {
 
   data_files <- list.files(path = path, pattern='*.csv', full.names=TRUE)
   data_tables <- basename(data_files)
@@ -9,7 +9,7 @@ load_database <- function(path = "data/") {
 
   db <- list()
   for (i in 1:length(data_files)) {
-    db[[i]] <- read.csv(data_files[i], stringsAsFactors = FALSE, fileEncoding = "latin1")
+    db[[i]] <- read.csv(data_files[i], stringsAsFactors = FALSE, fileEncoding = encoding)
     names(db)[i] <- data_tables[i]
     setTxtProgressBar(progbar, i)
   }
