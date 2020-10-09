@@ -1,8 +1,6 @@
 
 update_id_changes <- function(new, cdm, verbose = TRUE) {
 
-  if (is.na(new$type) | (!new$type %in% c("vid", "pid"))) stop("type must either be 'vid' or 'pid")
-
   output <- cdm
 
   if (new$old_id == "") stop("You must give an old pid.")
@@ -12,7 +10,7 @@ update_id_changes <- function(new, cdm, verbose = TRUE) {
     print(output[which(output$old_id == new$old_id & output$active_id == new$active_id),])
     warning("Looks like this entry already exists")
   }
-  if (!all(c("coder", "date", "old_id", "active_id", "name", "type", "reason") %in% names(new))) {
+  if (!all(c("coder", "date", "old_id", "active_id", "name", "reason") %in% names(new))) {
     stop ("some fields in the 'new' entry are missing")
   }
 

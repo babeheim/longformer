@@ -57,7 +57,7 @@ test_that("reverse_month_day works", {
 
 test_that("make_ids always produces the correct number of ids, but never collides with itself", {
   for(i in 1:10){
-    n <- sample(1:100000, 1)
+    n <- sample(1:10000, 1)
     x <- make_ids(n = n, nchars = 5)
     expect_false(any(duplicated(x)))
     expect_true(length(x) == n)
