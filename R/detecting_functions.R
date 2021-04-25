@@ -1,8 +1,8 @@
 
-detect_retired_pids <- function (changelog, d, data_pid, display_columns = c("pid", "first_name", "last_name_1", 
+detect_retired_pids <- function (changelog, d, pid_column = "pid", display_columns = c("pid", "first_name", "last_name_1", 
     "last_name_2"), outpath = NA) 
 {
-    check <- unique(d[[data_pid]][which(d[[data_pid]] %in% changelog$old_id)])
+    check <- unique(d[[pid_column]][which(d[[pid_column]] %in% changelog$old_id)])
     if (length(check) == 0) {
         stop("no pids are in the changelog!")
     }
@@ -10,7 +10,7 @@ detect_retired_pids <- function (changelog, d, data_pid, display_columns = c("pi
         my.script <- rep("", length(check))
         for (i in 1:length(check)) {
             my.changelog.rows <- which(changelog$old_id == check[i])
-            print(d[which(d[[data_pid]] == check[i]), display_columns])
+            print(d[which(d[[pid_column]] == check[i]), display_columns])
             print(changelog[my.changelog.rows, ])
             selection <- as.numeric(readline(paste("(", i, "/", 
                 length(check), ") 1=first, 2=second, etc.? (0=none)  ", 
