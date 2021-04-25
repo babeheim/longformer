@@ -1,43 +1,41 @@
 
-detect_retired_pids <- function(changelog, d, columns = c("pid", "first_name", "last_name_1", "last_name_2"), outpath = NA) {
-
-  check <- unique(d$pid[which(d$pid %in% changelog$old_id)])
-
-  if (length(check) == 0) {
-    stop("no pids are in the changelog!")
-  } else {
-
-    my.script <- rep("", length(check))
-
-    for (i in 1:length(check)){
-
-      my.changelog.rows <- which(changelog$old_id == check[i])
-
-      print(d[which(d$pid == check[i]), columns])
-      print(changelog[my.changelog.rows,])
-
-      selection <- as.numeric(readline(paste("(", i, "/", length(check), ") 1=first, 2=second, etc.? (0=none)  ", sep="")))
-
-      if (!is.na(selection) & 0 < selection & selection <= length(my.changelog.rows)) {
-        active_id <- changelog$active_id[my.changelog.rows[selection]]
-        my.script[i] <- paste("d$pid[which(d$pid == '", check[i], "')] <- '", active_id, "'", sep="")
-      } else {
-        my.script[i] <- paste("# no changelog entry chosen for pid", check[i])
-        print(my.script[i])
-      }
+detect_retired_pids <- function (changelog, d, data_pid, display_columns = c("pid", "first_name", "last_name_1", 
+    "last_name_2"), outpath = NA) 
+{
+    check <- unique(d[[data_pid]][which(d[[data_pid]] %in% changelog$old_id)])
+    if (length(check) == 0) {
+        stop("no pids are in the changelog!")
     }
-
-    if (!is.na(outpath)) {
-      writeLines(my.script, "changelog_cleanings.txt")
-      print("changelog_cleanings.txt created in current working directory")
-    } else {
-      return(my.script)
+    else {
+        my.script <- rep("", length(check))
+        for (i in 1:length(check)) {
+            my.changelog.rows <- which(changelog$old_id == check[i])
+            print(d[which(d[[data_pid]] == check[i]), display_columns])
+            print(changelog[my.changelog.rows, ])
+            selection <- as.numeric(readline(paste("(", i, "/", 
+                length(check), ") 1=first, 2=second, etc.? (0=none)  ", 
+                sep = "")))
+            if (!is.na(selection) & 0 < selection & selection <= 
+                length(my.changelog.rows)) {
+                active_id <- changelog$active_id[my.changelog.rows[selection]]
+                my.script[i] <- paste("d$pid[which(d$pid == '", 
+                  check[i], "')] <- '", active_id, "'", sep = "")
+            }
+            else {
+                my.script[i] <- paste("# no changelog entry chosen for pid", 
+                  check[i])
+                print(my.script[i])
+            }
+        }
+        if (!is.na(outpath)) {
+            writeLines(my.script, "changelog_cleanings.txt")
+            print("changelog_cleanings.txt created in current working directory")
+        }
+        else {
+            return(my.script)
+        }
     }
-
-  }
-
 }
-
 
 
 detect_pid_collisions <- function(data_pids, data_names,
@@ -84,26 +82,32 @@ detect_pid_collisions <- function(data_pids, data_names,
 
 }
 
-review_collisions <- function(check, d, columns = c("pid", "first_name", "last_name_1", "last_name_2"), people, reviewed = NA, refresh = TRUE) {
-
-  if (!any(is.na(reviewed))) stop ("invalid reviewed vector")
-  start <- min(which(is.na(reviewed)))
-  out <- rep(NA, length(check))
-  out[1:length(reviewed)] <- reviewed
-  if (refresh) system("clear")
-  for (i in start:length(check)) {
-    print(d[which(d$pid  ==  check[i]),columns])
-    if (check[i] %in% people$pid) print(people[which(people$pid  ==  check[i]), ])
-    out[i] <- readline(paste("(", i, "/", length(check), ") 1=no issues, 2=not sure, 3=problem; type 'exit' to end\ndecision: ", sep=""))
-    out[out  ==  "1"] <- "no issues"
-    out[out  ==  "2"] <- "not sure"
-    out[out  ==  "3"] <- "problem"
-    if (refresh) system("clear")
-    if (out[i]  ==  "exit") break()
-  }
-
-  print("all cases reviewed!")
-
-  return(out)
-
+review_collisions <- function (check, d, people, pid_column = "pid",
+    display_columns = c("pid", "first_name", "last_name_1", "last_name_2"),
+    reviewed = NA, refresh = TRUE) 
+{
+    if (!any(is.na(reviewed))) 
+        stop("invalid reviewed vector")
+    start <- min(which(is.na(reviewed)))
+    out <- rep(NA, length(check))
+    out[1:length(reviewed)] <- reviewed
+    if (refresh) 
+        system("clear")
+    for (i in start:length(check)) {
+        print(d[which(d[[pid_column]] == check[i]), display_columns])
+        if (check[i] %in% people$pid) 
+            print(people[which(people$pid == check[i]), ])
+        out[i] <- readline(paste("(", i, "/", length(check), 
+            ") 1=no issues, 2=not sure, 3=problem; type 'exit' to end\ndecision: ", 
+            sep = ""))
+        out[out == "1"] <- "no issues"
+        out[out == "2"] <- "not sure"
+        out[out == "3"] <- "problem"
+        if (refresh) 
+            system("clear")
+        if (out[i] == "exit") 
+            (break)()
+    }
+    print("all cases reviewed!")
+    return(out)
 }
