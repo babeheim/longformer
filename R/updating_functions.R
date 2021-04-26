@@ -19,7 +19,7 @@ update_id_changes <- function(new, cdm, verbose = TRUE) {
     cat("The following row will be added to the output:\n")
     print(new)
   }
-  output <- rbind(output, new)
+  output <- bind_rows(output, new)
 
   update_rows <- which(output$active_id == new$old_id)
   if (length(update_rows) > 0) {
