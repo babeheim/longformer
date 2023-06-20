@@ -15,6 +15,7 @@ Depends: R (>= 3.5.1),
   stringr,
   testthat,
   pdftools,
+  qrcode,
   kinship2
 Encoding: UTF-8
 LazyData: true
