@@ -40,7 +40,7 @@ filter_ancestors <- function(focal, pedigree, max_generations = 8) {
     ancestors <- c(ancestors, pedigree[ego_rows, 3])
     ancestors <- sort(unique(ancestors))
   }
-  pedigree[pedigree[, 1] %in% ancestors,]
+  pedigree[pedigree[, 1] %in% ancestors,,drop = FALSE]
 }
 
 # identify all individuals who are descendants of a particular focal or set of focals
@@ -50,7 +50,7 @@ filter_descendants <- function(focal, pedigree, max_generations = 8) {
     parent_rows <- which(pedigree[, 2] %in% descendants | pedigree[, 3] %in% descendants)
     descendants <- c(descendants, pedigree[parent_rows, 1])
   }
-  pedigree[pedigree[, 1] %in% descendants,]
+  pedigree[pedigree[, 1] %in% descendants,,drop = FALSE]
 }
 
 # identify all individuals who are descendants of a particular focal or set of focals

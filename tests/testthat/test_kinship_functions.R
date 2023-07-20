@@ -40,14 +40,14 @@ test_that("filter functions mockup works", {
   expect_true(nrow(am) == 2)
 
   expect_silent(am <- filter_ancestors("7", reg))
-  expect_true(nrow(am) == 1) # weird output, i dunno how a single row from a matrix is not returning a matrix...
+  expect_true(nrow(am) == 1)
 
   expect_silent(am <- filter_ancestors(c("1", "4"), reg))
   expect_true(nrow(am) == 7)
 
   expect_silent(dm <- filter_descendants("1", reg))
-  expect_true(nrow(dm) == 1) # weird output, i dunno how a single row from a matrix is not returning a matrix...
-
+  expect_true(nrow(dm) == 1)
+  
   expect_silent(dm <- filter_descendants("4", reg))
   expect_true(nrow(dm) == 3)
 
