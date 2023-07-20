@@ -47,7 +47,7 @@ test_that("filter functions mockup works", {
 
   expect_silent(dm <- filter_descendants("1", reg))
   expect_true(nrow(dm) == 1)
-  
+
   expect_silent(dm <- filter_descendants("4", reg))
   expect_true(nrow(dm) == 3)
 
@@ -143,7 +143,6 @@ test_that("extend_pedigree works on all stored pedigrees", {
   ppl$mom[ppl$mom == 0] <- NA
   ppl$dad[ppl$dad == 0] <- NA
   expect_silent(am <- extend_pedigree(ppl, verbose = FALSE, max_generations = 5))
-  # sloooooow after 10 generations back
 
   ppl <- read.csv("pedigrees/endow_ppl.csv", stringsAsFactors = FALSE)
   ppl <- select(ppl, person_id, father_id, mother_id)
