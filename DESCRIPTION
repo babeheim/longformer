@@ -1,15 +1,15 @@
 Package: longformer
-Title: What the Package Does (One Line, Title Case)
+Title: Tools for Managing Relational Plaintext
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Bret",
+           family = "Beheim",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: What license it uses
-Depends: R (>= 3.5.1),
+           email = "beheim@gmail.com",
+           comment = c(ORCID = "0000-0003-4653-3155"))
+Description: A collection of tools for loading, cleaning, and checking relationally-connected plaintext CSV database files.
+License: Creative Commons CC BY-NC-SA 4.0
+Depends: R (>= 4.1.0),
   stringi,
   dplyr,
   stringr,
@@ -18,3 +18,4 @@ Depends: R (>= 3.5.1),
   kinship2
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 7.2.1
