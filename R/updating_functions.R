@@ -1,38 +1,39 @@
 
+update_id_changes <- function(new_change, changelog, verbose = TRUE) {
 
-update_id_changes <- function(new, cdm, verbose = TRUE) {
+  output <- changelog
 
-  output <- cdm
-
-  if (new$old_id == "") stop("You must give an old pid.")
-  if (new$active_id == "") stop("You must give a new pid.")
-  if (new$name == "") stop("You must give a name.")
-  if (any(output$old_id == new$old_id & output$active_id == new$active_id)) {
-    print(output[which(output$old_id == new$old_id & output$active_id == new$active_id),])
+  if (new_change$old_id == "") stop("You must give an old pid.")
+  if (new_change$active_id == "") stop("You must give a new pid.")
+  if (new_change$name == "") stop("You must give a name.")
+  if (any(output$old_id == new_change$old_id & output$active_id == new_change$active_id)) {
+    print(output[which(output$old_id == new_change$old_id & output$active_id == new_change$active_id),])
     warning("Looks like this entry already exists")
   }
-  if (!all(c("coder", "date", "old_id", "active_id", "name", "reason") %in% names(new))) {
+  if (!all(c("coder", "date", "old_id", "active_id", "name", "reason") %in% names(new_change))) {
     stop ("some fields in the 'new' entry are missing")
   }
 
   if (verbose) {
     cat("The following row will be added to the output:\n")
-    print(new)
+    print(new_change)
   }
-  output <- bind_rows(output, new)
+  output <- bind_rows(output, new_change)
 
-  update_rows <- which(output$active_id == new$old_id)
+  update_rows <- which(output$active_id == new_change$old_id)
   if (length(update_rows) > 0) {
     if (verbose) {
       cat("These existing rows would be updated:\n")
       print(output[update_rows,])
     }
-    output$active_id[update_rows] <- new$active_id
+    output$active_id[update_rows] <- new_change$active_id
   }
 
   return(output)
 
 }
+
+
 
 
 update_pid <- function(old_pid, active_pid, people, verbose = TRUE) {

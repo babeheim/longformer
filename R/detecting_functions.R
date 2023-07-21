@@ -38,6 +38,8 @@ detect_retired_pids <- function (changelog, d, pid_column = "pid", display_colum
 }
 
 
+
+
 detect_pid_collisions <- function(data_pids, data_names,
   reference_pids = NA, reference_names = NA,
   threshold = 0.8, silent = FALSE) {
@@ -81,6 +83,7 @@ detect_pid_collisions <- function(data_pids, data_names,
   return(check)
 
 }
+
 
 review_collisions <- function (check, d, people, pid_column = "pid",
     display_columns = c("pid", "first_name", "last_name_1", "last_name_2"),

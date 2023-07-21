@@ -28,6 +28,7 @@ reverse_month_day <- function(date) {
 
 similarity <- function(x, y) 1 - adist(x, y) / pmax(nchar(x), nchar(y))
 
+
 dir_init <- function(path, verbose=FALSE){
   if(substr(path, 1, 2)!='./') stop('path argument must be formatted
     with "./" at beginning')
@@ -39,6 +40,7 @@ dir_init <- function(path, verbose=FALSE){
   if(dir.exists(path)) unlink(path, recursive=TRUE)
   dir.create(path)
 }
+
 
 make_ids <- function (n, bag = c(letters, 0:9), reserved = "", seed = NA, 
     nchars = 4) 

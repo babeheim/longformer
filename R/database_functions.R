@@ -19,7 +19,6 @@ load_database <- function(path = "data/", encoding = "") {
 
 }
 
-
 generate_schema <- function(db, keys, sensitive_variables, verbose = TRUE) {
 
     # generate a list of tables
