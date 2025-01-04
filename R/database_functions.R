@@ -1,20 +1,25 @@
 
-load_database <- function(path = "data/", encoding = "") {
+load_database <- function(path = "data", encoding = NULL, fileEncoding = "UTF-8", silent = TRUE) {
+
+  if (!is.null(encoding)) {
+    warning("the 'encoding' argument has been deprecating, use 'fileEncoding' instead")
+    fileEncoding <- encoding
+  }
 
   data_files <- list.files(path = path, pattern='*.csv', full.names=TRUE)
   data_tables <- basename(data_files)
   data_tables <- gsub('\\.csv', '', data_tables)
 
-  progbar <- txtProgressBar(1, length(data_files), style=3)
+  if (!silent) progbar <- txtProgressBar(1, length(data_files), style=3)
 
   db <- list()
   for (i in 1:length(data_files)) {
-    db[[i]] <- read.csv(data_files[i], stringsAsFactors = FALSE, fileEncoding = encoding)
+    db[[i]] <- read.csv(data_files[i], stringsAsFactors = FALSE, fileEncoding = fileEncoding)
     names(db)[i] <- data_tables[i]
-    setTxtProgressBar(progbar, i)
+    if (!silent) setTxtProgressBar(progbar, i)
   }
   
-  close(progbar)
+  if (!silent) close(progbar)
   return(db)
 
 }
