@@ -20,6 +20,7 @@ detect_retired_pids <- function (changelog, d, pid_column = "pid", display_colum
                 active_id <- changelog$active_id[my.changelog.rows[selection]]
                 my.script[i] <- paste("d$pid[which(d$pid == '", 
                   check[i], "')] <- '", active_id, "'", sep = "")
+                my.script[i] <- gsub("pid", pid_column, my.script[i])
             }
             else {
                 my.script[i] <- paste("# no changelog entry chosen for pid", 
