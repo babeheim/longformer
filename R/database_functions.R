@@ -2,7 +2,7 @@
 load_database <- function(path = "data", encoding = NULL, fileEncoding = "UTF-8", silent = TRUE) {
 
   if (!is.null(encoding)) {
-    warning("the 'encoding' argument has been deprecating, use 'fileEncoding' instead")
+    warning("the 'encoding' argument has been deprecated, use 'fileEncoding' instead")
     fileEncoding <- encoding
   }
 
